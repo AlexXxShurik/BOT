@@ -13,33 +13,45 @@ class Bot(discord.Client):
         print('Logged on as {0}!'.format(self.user))
 
     async def on_message(self, ctx):
+        # Проверка капса
         if ctx.author == self.user:
             return
         if ctx.content.upper() == ctx.content and len(re.sub(r'[^\w\s]+|[\d]+', r'', ctx.content).strip())>2:
             if caps_list.count(ctx.author) == 1:
                 await ctx.channel.send(f' { ctx.author.mention } { message["kaps2"] }')
                 await ctx.author.timeout(timedelta(seconds=60), reason='Забанен за капс')
+                print('Писал капсом, чат на минуту: ', ctx.author, ' Ник:', ctx.author.nick, ' Сообщение:', ctx.content)
             elif caps_list.count(ctx.author) == 2:
                 await ctx.channel.send(f' { ctx.author.mention } { message["kaps3"] }')
                 await ctx.author.timeout(timedelta(seconds=300), reason='Забанен за капс')
+                print('Писал капсом, чат на 5 мин: ', ctx.author, ' Ник:', ctx.author.nick, ' Сообщение:', ctx.content)
             elif caps_list.count(ctx.author) == 3:
                 await ctx.channel.send(f' { ctx.author.mention } { message["kaps4"] }')
                 await ctx.author.timeout(timedelta(days=1), reason='Забанен за капс')
+                print('Писал капсом, чат на день: ', ctx.author, ' Ник:', ctx.author.nick, ' Сообщение:', ctx.content)
             elif caps_list.count(ctx.author) > 3:
                 await ctx.channel.send(f' { ctx.author.mention } { message["kaps5"] }')
                 await asyncio.sleep(5)
                 await ctx.author.ban(delete_message_days=1, reason='Забанен за капс')
+                print('Писал капсом, забанен: ', ctx.author, ' Ник:', ctx.author.nick, ' Сообщение:', ctx.content)
             else:
                 await ctx.channel.send(f' { ctx.author.mention } { message["kaps1"] }')
+                print('Писал капсом: ', ctx.author, ' Ник:', ctx.author.nick, ' Сообщение:', ctx.content)
             caps_list.append(ctx.author)
+        # Проверка ника на маты
+        print(str(ctx.author).lower())
         for mat in abusive_language:
-            if mat in str(ctx.author.nick).lower():
+            if mat in str(ctx.author.nick).lower() or ctx.author.nick == None and mat in str(ctx.author).lower():
                 await ctx.channel.send(f' { ctx.author.mention } { message["mat_nick"] } "{ mat }"')
+                await ctx.author.timeout(timedelta(days=25), reason='Мат в нике')
+                print('Мат в нике: ', ctx.author, ' Ник:', ctx.author.nick, ' Мат:', mat)
                 break
+        # Проверка сообщения на маты
+        for mes in re.sub(r'[^\w\s]+|[\d]+', r' ', ctx.content).strip().split():
+            if mes.lower() in abusive_language:
+                await ctx.channel.send(f' { ctx.author.mention } Плохой человек говорить "{ mes }" - это плохой слово!')
+                await ctx.author.timeout(timedelta(seconds=60), reason='Забанен за мат')
+                print('Мат написал: ', ctx.author, ' Ник:', ctx.author.nick, ' Сообщение:', ctx.content)
 
 client = Bot(intents=discord.Intents.all())
 client.run(token)
-
-# await ctx.author.ban(delete_message_days=1, reason='Забанен за капс')
-# await asyncio.sleep(5)
-# await ctx.author.unban()

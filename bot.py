@@ -6,6 +6,7 @@ import discord
 from config import *
 
 caps_list = []
+bad_nick = []
 
 
 class Bot(discord.Client):
@@ -39,19 +40,29 @@ class Bot(discord.Client):
                 print('Писал капсом: ', ctx.author, ' Ник:', ctx.author.nick, ' Сообщение:', ctx.content)
             caps_list.append(ctx.author)
         # Проверка ника на маты
-        print(str(ctx.author).lower())
         for mat in abusive_language:
             if mat in str(ctx.author.nick).lower() or ctx.author.nick == None and mat in str(ctx.author).lower():
-                await ctx.channel.send(f' { ctx.author.mention } { message["mat_nick"] } "{ mat }"')
-                await ctx.author.timeout(timedelta(days=25), reason='Мат в нике')
+                if bad_nick.count(ctx.author) == 0:
+                    await ctx.channel.send(f' { ctx.author.mention } { message["mat_nick1"] } "{ mat }"')
+                elif bad_nick.count(ctx.author) == 1:
+                    await ctx.channel.send(f' { ctx.author.mention } { message["mat_nick2"] } "{ mat }"')
+                elif bad_nick.count(ctx.author) == 2:
+                    await ctx.channel.send(f' { ctx.author.mention } { message["mat_nick3"] } "{ mat }"')
+                elif bad_nick.count(ctx.author) > 2:
+                    await ctx.channel.send(f' { ctx.author.mention } { message["mat_nick4"] }')
+                    await asyncio.sleep(5)
+                    await ctx.author.ban(delete_message_days=1, reason='Забанен за мат в нике')
+                bad_nick.append(ctx.author)
                 print('Мат в нике: ', ctx.author, ' Ник:', ctx.author.nick, ' Мат:', mat)
                 break
         # Проверка сообщения на маты
         for mes in re.sub(r'[^\w\s]+|[\d]+', r' ', ctx.content).strip().split():
             if mes.lower() in abusive_language:
-                await ctx.channel.send(f' { ctx.author.mention } Плохой человек говорить "{ mes }" - это плохой слово!')
-                await ctx.author.timeout(timedelta(seconds=60), reason='Забанен за мат')
+                await ctx.channel.send(f' { ctx.author.mention } Плохой человек говорить плохо, моя удалить такой разговор')
+                await ctx.author.timeout(timedelta(minutes=10), reason='Забанен за мат')
+                await ctx.delete()
                 print('Мат написал: ', ctx.author, ' Ник:', ctx.author.nick, ' Сообщение:', ctx.content)
+
 
 client = Bot(intents=discord.Intents.all())
 client.run(token)

@@ -42,17 +42,8 @@ class Bot(discord.Client):
         # Проверка ника на маты
         for mat in abusive_language:
             if mat in str(ctx.author.nick).lower() or ctx.author.nick == None and mat in str(ctx.author).lower():
-                if bad_nick.count(ctx.author) == 0:
-                    await ctx.channel.send(f' { ctx.author.mention } { message["mat_nick1"] } "{ mat }"')
-                elif bad_nick.count(ctx.author) == 1:
-                    await ctx.channel.send(f' { ctx.author.mention } { message["mat_nick2"] } "{ mat }"')
-                elif bad_nick.count(ctx.author) == 2:
-                    await ctx.channel.send(f' { ctx.author.mention } { message["mat_nick3"] } "{ mat }"')
-                elif bad_nick.count(ctx.author) > 2:
-                    await ctx.channel.send(f' { ctx.author.mention } { message["mat_nick4"] }')
-                    await asyncio.sleep(5)
-                    await ctx.author.ban(delete_message_days=1, reason='Забанен за мат в нике')
-                bad_nick.append(ctx.author)
+                await ctx.channel.send(f' { ctx.author.mention } { message["mat_nick"] }')
+                await ctx.author.edit(nick='Пища Для Орка')
                 print('Мат в нике: ', ctx.author, ' Ник:', ctx.author.nick, ' Мат:', mat)
                 break
         # Проверка сообщения на маты

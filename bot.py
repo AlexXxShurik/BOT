@@ -10,6 +10,7 @@ bad_nick = []
 
 
 class Bot(discord.Client):
+
     async def on_ready(self):
         print('Logged on as {0}!'.format(self.user))
 
@@ -44,6 +45,7 @@ class Bot(discord.Client):
             if mat in str(ctx.author.nick).lower() or ctx.author.nick == None and mat in str(ctx.author).lower():
                 await ctx.channel.send(f' { ctx.author.mention } { message["mat_nick"] }')
                 print('Мат в нике: ', ctx.author, ' Ник:', ctx.author.nick, ' Мат:', mat)
+                await ctx.author.add_roles(discord.utils.get(self.get_guild(230416224629161985).roles, id=893606025264001094))
                 await ctx.author.edit(nick='Пища Для Орка')
                 break
         # Проверка сообщения на маты
@@ -55,7 +57,7 @@ class Bot(discord.Client):
                 print('Мат написал: ', ctx.author, ' Ник:', ctx.author.nick, ' Сообщение:', ctx.content)
 
     async def on_member_update(self, before, after):
-        if before.nick != after.nick:
+        if before.nick != after.nick and after.nick != 'Пища Для Орка':
             for mat in abusive_language:
                 if mat in str(after.nick).lower() or after.nick == None and mat in str(after).lower():
                     if before.nick == 'Пища Для Орка':
@@ -63,9 +65,11 @@ class Bot(discord.Client):
                     else:
                         await after.send(f' { after.mention } { message["mat_nick"] }')
                     print('Мат в нике: ', after, ' Ник:', after.nick, ' Мат:', mat)
+                    await after.add_roles(discord.utils.get(self.get_guild(230416224629161985).roles, id=893606025264001094))
                     await after.edit(nick='Пища Для Орка')
                     break
-
+            if before.nick == 'Пища Для Орка':
+                await after.remove_roles(discord.utils.get(self.get_guild(230416224629161985).roles, id=893606025264001094))
 
 client = Bot(intents=discord.Intents.all())
 client.run(token)

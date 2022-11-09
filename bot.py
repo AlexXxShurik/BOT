@@ -43,8 +43,8 @@ class Bot(discord.Client):
         for mat in abusive_language:
             if mat in str(ctx.author.nick).lower() or ctx.author.nick == None and mat in str(ctx.author).lower():
                 await ctx.channel.send(f' { ctx.author.mention } { message["mat_nick"] }')
-                await ctx.author.edit(nick='Пища Для Орка')
                 print('Мат в нике: ', ctx.author, ' Ник:', ctx.author.nick, ' Мат:', mat)
+                await ctx.author.edit(nick='Пища Для Орка')
                 break
         # Проверка сообщения на маты
         for mes in re.sub(r'[^\w\s]+|[\d]+', r' ', ctx.content).strip().split():
@@ -53,6 +53,18 @@ class Bot(discord.Client):
                 await ctx.author.timeout(timedelta(minutes=10), reason='Забанен за мат')
                 await ctx.delete()
                 print('Мат написал: ', ctx.author, ' Ник:', ctx.author.nick, ' Сообщение:', ctx.content)
+
+    async def on_member_update(self, before, after):
+        if before.nick != after.nick:
+            for mat in abusive_language:
+                if mat in str(after.nick).lower() or after.nick == None and mat in str(after).lower():
+                    if before.nick == 'Пища Для Орка':
+                        await after.send(f' { after.mention } { message["mat_nick_rename"] }')
+                    else:
+                        await after.send(f' { after.mention } { message["mat_nick"] }')
+                    print('Мат в нике: ', after, ' Ник:', after.nick, ' Мат:', mat)
+                    await after.edit(nick='Пища Для Орка')
+                    break
 
 
 client = Bot(intents=discord.Intents.all())

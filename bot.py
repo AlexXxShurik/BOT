@@ -51,7 +51,7 @@ class Bot(discord.Client):
         # Проверка сообщения на маты
         for mes in re.sub(r'[^\w\s]+|[\d]+', r' ', ctx.content).strip().split():
             if mes.lower() in abusive_language:
-                await ctx.channel.send(f' { ctx.author.mention } Плохой человек говорить плохо, моя удалить такой разговор')
+                await ctx.channel.send(f' { ctx.author.mention } { message["mat1"] }')
                 await ctx.author.timeout(timedelta(minutes=10), reason='Забанен за мат')
                 await ctx.delete()
                 print('Мат написал: ', ctx.author, ' Ник:', ctx.author.nick, ' Сообщение:', ctx.content)

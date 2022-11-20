@@ -1,7 +1,6 @@
 import asyncio
 import re
 from datetime import timedelta
-from mysql.connector import connect, Error
 
 import discord
 

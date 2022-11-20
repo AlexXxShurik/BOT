@@ -1,8 +1,11 @@
 import asyncio
 import re
 from datetime import timedelta
+from mysql.connector import connect, Error
 
 import discord
+
+from DataBase import *
 from config import *
 
 caps_list = []
@@ -11,10 +14,20 @@ bad_nick = []
 
 class Bot(discord.Client):
 
+    abusive_language = []
+
+    caps_list = []
+
     async def on_ready(self):
         print('Logged on as {0}!'.format(self.user))
+        self.abusive_language = getMats()
+        self.caps_list = getCapser()
+        print(self.caps_list)
 
     async def on_message(self, ctx):
+
+        abusive_language = getMats()
+
         # Проверка капса
         if ctx.author == self.user:
             return
@@ -45,7 +58,8 @@ class Bot(discord.Client):
             else:
                 await ctx.channel.send(f' { ctx.author.mention } { message["kaps1"] }')
                 print('Писал капсом: ', ctx.author, ' Ник:', ctx.author.nick, ' Сообщение:', ctx.content)
-            caps_list.append(ctx.author)
+            self.caps_list.append(ctx.author)
+            insertCaps(str(ctx.author))
         # Проверка ника на маты
         for mat in abusive_language:
             if mat in str(ctx.author.nick).lower() or ctx.author.nick == None and mat in str(ctx.author).lower():
@@ -63,8 +77,9 @@ class Bot(discord.Client):
                 print('Мат написал: ', ctx.author, ' Ник:', ctx.author.nick, ' Сообщение:', ctx.content)
 
     async def on_member_update(self, before, after):
+
         if before.nick != after.nick and after.nick != 'Пища Для Орка':
-            for mat in abusive_language:
+            for mat in self.abusive_language:
                 if mat in str(after.nick).lower() or after.nick == None and mat in str(after).lower():
                     if before.nick == 'Пища Для Орка':
                         await after.send(f' { after.mention } { message["mat_nick_rename"] }')

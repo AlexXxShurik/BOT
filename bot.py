@@ -18,7 +18,13 @@ class Bot(discord.Client):
         # Проверка капса
         if ctx.author == self.user:
             return
-        if ctx.content.upper() == ctx.content and len(re.sub(r'[^\w\s]+|[\d]+', r'', ctx.content).strip())>2:
+        stmbol_caps = 0
+
+        for caps in re.sub(r'[^\w\s]+|[\d]+', r'', ctx.content).strip():
+            if caps.isupper():
+                stmbol_caps += 1
+
+        if stmbol_caps > 6 and len(re.sub(r'[^\w\s]+|[\d]+', r'', ctx.content).strip())>2:
             if caps_list.count(ctx.author) == 1:
                 await ctx.channel.send(f' { ctx.author.mention } { message["kaps2"] }')
                 await ctx.author.timeout(timedelta(seconds=60), reason='Забанен за капс')

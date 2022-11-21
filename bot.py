@@ -39,19 +39,19 @@ class Bot(discord.Client):
                 stmbol_caps += 1
 
         if stmbol_caps/len(message_lower) > 0.4 or ctx.content.upper() == ctx.content and len(message_lower)>3:
-            if caps_list.count(ctx.author) == 1:
+            if self.caps_list.count(ctx.author) == 1:
                 await ctx.channel.send(f' { ctx.author.mention } { message["kaps2"] }')
                 await ctx.author.timeout(timedelta(seconds=60), reason='Забанен за капс')
                 print('Писал капсом, чат на минуту: ', ctx.author, ' Ник:', ctx.author.nick, ' Сообщение:', ctx.content)
-            elif caps_list.count(ctx.author) == 2:
+            elif self.caps_list.count(ctx.author) == 2:
                 await ctx.channel.send(f' { ctx.author.mention } { message["kaps3"] }')
                 await ctx.author.timeout(timedelta(seconds=300), reason='Забанен за капс')
                 print('Писал капсом, чат на 5 мин: ', ctx.author, ' Ник:', ctx.author.nick, ' Сообщение:', ctx.content)
-            elif caps_list.count(ctx.author) == 3:
+            elif self.caps_list.count(ctx.author) == 3:
                 await ctx.channel.send(f' { ctx.author.mention } { message["kaps4"] }')
                 await ctx.author.timeout(timedelta(days=1), reason='Забанен за капс')
                 print('Писал капсом, чат на день: ', ctx.author, ' Ник:', ctx.author.nick, ' Сообщение:', ctx.content)
-            elif caps_list.count(ctx.author) > 3:
+            elif self.caps_list.count(ctx.author) > 3:
                 await ctx.channel.send(f' { ctx.author.mention } { message["kaps5"] }')
                 await asyncio.sleep(5)
                 await ctx.author.ban(delete_message_days=1, reason='Забанен за капс')

@@ -32,7 +32,7 @@ class Bot(discord.Client):
             return
         stmbol_caps = 0
 
-        for caps in re.sub(r'[^\w\s]+|[\d]+', r'', ctx.content).strip():
+        for caps in re.sub(r'[^\w\s]+|[\d]+', r'', ctx.content).strip().split("http")[0]:
             if caps.isupper():
                 stmbol_caps += 1
 

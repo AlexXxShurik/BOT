@@ -32,11 +32,13 @@ class Bot(discord.Client):
             return
         stmbol_caps = 0
 
-        for caps in re.sub(r'[^\w\s]+|[\d]+', r'', ctx.content).strip().split("http")[0]:
+        message_lower = re.sub(r'[^\w\s]+|[\d]+', r'', ctx.content).strip().split("http")[0]
+
+        for caps in message_lower:
             if caps.isupper():
                 stmbol_caps += 1
 
-        if stmbol_caps > 6 or ctx.content.upper() == ctx.content and len(re.sub(r'[^\w\s]+|[\d]+', r'', ctx.content).strip())>2:
+        if stmbol_caps/len(message_lower) > 0.4 or ctx.content.upper() == ctx.content and len(message_lower)>3:
             if caps_list.count(ctx.author) == 1:
                 await ctx.channel.send(f' { ctx.author.mention } { message["kaps2"] }')
                 await ctx.author.timeout(timedelta(seconds=60), reason='Забанен за капс')

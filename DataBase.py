@@ -8,19 +8,15 @@ def getMats():
             user=data_base['login'],
             password=data_base['password'],
         ) as connection:
-            abusive_language = []
-            select_movies_query = "SELECT * FROM apwebd10_django.Mats"
+            select_query = "SELECT word FROM apwebd10_django.Mats"
             with connection.cursor() as cursor:
-                cursor.execute(select_movies_query)
-                result = cursor.fetchall()
-                for row in result:
-                    abusive_language.append(row[1])
+                cursor.execute(select_query)
+                abusive_language = [row[0] for row in cursor.fetchall()]
         return abusive_language
 
     except Error as e:
-        print("Ошибка: ", e)
-        abusive_language = []
-        return abusive_language
+        print("Ошибка при получении матерных слов: ", e)
+        return []
 
 def getCapser():
     try:
@@ -29,19 +25,15 @@ def getCapser():
             user=data_base['login'],
             password=data_base['password'],
         ) as connection:
-            caps_list = []
-            select_movies_query = "SELECT * FROM apwebd10_django.capsers"
+            select_query = "SELECT nick FROM apwebd10_django.capsers"
             with connection.cursor() as cursor:
-                cursor.execute(select_movies_query)
-                result = cursor.fetchall()
-                for row in result:
-                    caps_list.append(row[1])
+                cursor.execute(select_query)
+                caps_list = [row[0] for row in cursor.fetchall()]
         return caps_list
 
     except Error as e:
-        print("Ошибка: ", e)
-        caps_list = []
-        return caps_list
+        print("Ошибка при получении списка капсеров: ", e)
+        return []
 
 def insertCaps(nick):
     try:
@@ -50,11 +42,11 @@ def insertCaps(nick):
             user=data_base['login'],
             password=data_base['password'],
         ) as connection:
-            insert_movies_query = """INSERT INTO apwebd10_django.capsers(`nick`) VALUES ('""" + nick + """')"""
+            insert_query = "INSERT INTO apwebd10_django.capsers (`nick`) VALUES (%s)"
             with connection.cursor() as cursor:
-                cursor.execute(insert_movies_query)
+                cursor.execute(insert_query, (nick,))
                 connection.commit()
-            print("Внесен капсер: ", nick)
+            print("Добавлен капсер: ", nick)
 
     except Error as e:
-        print("Ошибка: ", e)
+        print("Ошибка при добавлении капсера: ", e)

@@ -17,5 +17,5 @@ message = {
 data_base = {
     'login': "Логин",
     'password': "Пароль",
-    'server': "apwebd10.beget.tech",
+    'server': "server",
 }
